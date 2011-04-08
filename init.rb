@@ -2,9 +2,11 @@ require 'redmine'
 
 require 'status_notifications'
 
+ActiveRecord::Base.observers << StatusObserver
 config.to_prepare do
-  require_dependency 'journal_observer_patch'
-  require_dependency 'mailer_patch'
+  unless config.cache_classes
+    StatusObserver.instance.reload_observer
+  end
 end
 
 Redmine::Plugin.register :redmine_status_notifications do
